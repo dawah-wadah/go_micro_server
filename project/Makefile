@@ -12,7 +12,7 @@ up:
 up_build: build_broker
 	@echo "Stopping docker images (if running....)"
 	docker-compose down
-	@ech "Building (when required) and starting docker images..."
+	@echo "Building (when required) and starting docker images..."
 	docker-compose up --build -d
 	@echo "Docker images built and started"
 ## down: stops docker compose
