@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 )
 
-type jsonResponse struct {
+type JsonResponse struct {
 	Error   bool   `json:"error"`
 	Message string `json:"message"`
 	Data    any    `json:"data",omitempty`
@@ -27,7 +28,7 @@ func (app *Config) readJSON(w http.ResponseWriter, r *http.Request, data any) er
 	}
 	// we decode again to see if there are multiple bodies by
 	err = decoder.Decode(&struct{}{})
-	if err != nil {
+	if err != io.EOF {
 		return errors.New("body must have only a single JSON value")
 	}
 
@@ -65,7 +66,7 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 	if len(status) > 0 {
 		statusCode = status[0]
 	}
-	var payload jsonResponse
+	var payload JsonResponse
 	payload.Error = true
 	payload.Message = err.Error()
 

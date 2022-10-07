@@ -20,7 +20,7 @@ type AuthPayload struct {
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
-	payload := jsonResponse{
+	payload := JsonResponse{
 		Error:   false,
 		Message: "Hit the broker",
 	}
@@ -72,20 +72,20 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	// and check fro status accepted
 	// otherwise youd have some other successful unauthorized code
 	if response.StatusCode == http.StatusUnauthorized {
-		app.errorJson(w, errors.New("Invalid Credentials"))
+		app.errorJSON(w, errors.New("invalid credentials"))
 		return
 	} else if response.StatusCode != http.StatusAccepted {
-		app.errorJson(w, errors.New("error calling auth service"))
+		app.errorJSON(w, errors.New("error calling auth service"))
 		return
 	}
 
 	// create a variable we'll read response.Bpdy into
-	var jsonFromService jsonResponse
+	var jsonFromService JsonResponse
 	// decode json from auth service
 
 	err = json.NewDecoder(response.Body).Decode(&jsonFromService)
 	if err != nil {
-		app.errorJson(w, errors.New("Invalid Credentials"))
+		app.errorJSON(w, errors.New("invalid credentials"))
 		return
 	}
 
@@ -94,7 +94,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 		return
 	}
 
-	var payload jsonResponse
+	var payload JsonResponse
 	payload.Error = false
 	payload.Message = "Authenticated!"
 	payload.Data = jsonFromService.Data
