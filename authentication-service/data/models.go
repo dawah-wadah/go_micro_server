@@ -116,7 +116,7 @@ func (u *User) GetOne(id int) (*User, error) {
 	row := db.QueryRowContext(ctx, query, id)
 
 	err := row.Scan(
-		&user.ID
+		&user.ID,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
@@ -149,8 +149,8 @@ func (u *User) Update() error {
 		u.Email,
 		u.FirstName,
 		u.LastName,
-		u.Active, 
-		time.Now(), 
+		u.Active,
+		time.Now(),
 		u.ID,
 	)
 
@@ -163,9 +163,9 @@ func (u *User) Update() error {
 func (u *User) Delete() error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
-	
+
 	stmt := `DELETE FROM users WHERE id = $1`
-	_,err := db.ExecContext(ctx, query, u.ID)
+	_, err := db.ExecContext(ctx, stmt, u.ID)
 
 	if err != nil {
 		return err
@@ -174,11 +174,11 @@ func (u *User) Delete() error {
 }
 
 func (u *User) DeleteByID(id int) error {
-	ctx, cancel = context.WithTimeout(context.Background(), dbTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
 	stmt := `DELETE FROM users WHERE id = $1`
-	_,err := db.ExecContext(ctx, query, id)
+	_, err := db.ExecContext(ctx, stmt, id)
 
 	if err != nil {
 		return err
@@ -190,7 +190,7 @@ func (u *User) Insert(user User) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	hashedPassword, err := bcyprt.GenerateFromPassword([]byte(user.Password), 12)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
 		return 0, err
 	}
@@ -199,11 +199,11 @@ func (u *User) Insert(user User) (int, error) {
 	stmt := `insert into users (email, first_name, last_name, password, user_active, created_at, updated_at)
 	values ($1, $2, $3, $4, $5, $6, $7) returning id`
 
-	err := db.QueryRowContext(ctx, stmt, 
+	err = db.QueryRowContext(ctx, stmt,
 		user.Email,
 		user.FirstName,
 		user.LastName,
-		user.Password,
+		hashedPassword,
 		user.Active,
 		time.Now(),
 		time.Now(),
@@ -215,7 +215,6 @@ func (u *User) Insert(user User) (int, error) {
 	return newID, nil
 }
 
-
 func (u *User) ResetPassword(password string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -226,7 +225,7 @@ func (u *User) ResetPassword(password string) error {
 	}
 
 	stmt := `update users set password = $1 where id = $2`
-	_, err := db.QueryRowContext(ctx, stmt, hashedPassword, u.ID)
+	_, err = db.ExecContext(ctx, stmt, hashedPassword, u.ID)
 	if err != nil {
 		return err
 	}
@@ -237,7 +236,7 @@ func (u *User) PasswordMatches(plainText string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 	if err != nil {
 		switch {
-		case errors.Is(err, bcyprt.ErrMismatchedHashandPassword):
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
 			return false, nil
 		default:
 			return false, nil
