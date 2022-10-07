@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (app *Config) AuthenticateB(w http.ResponseWriter, r *http.Request) {
+func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	var requestPayload struct {
 		Email    string `json:"email"`
@@ -31,7 +31,7 @@ func (app *Config) AuthenticateB(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, errors.New("invalid credentials"), http.StatusForbidden)
 		return
 	}
-	payload := JSONResponse{
+	payload := jsonResponse{
 		Error:   false,
 		Message: fmt.Sprintf("Logged in user %s", user.Email),
 		Data:    user,
