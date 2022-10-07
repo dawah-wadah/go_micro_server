@@ -28,6 +28,8 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, payload)
 }
 
+// HandleSubmission is the main point of entry into the broker. It accepts a JSON
+// payload and performs an action based on the value of "action" in that JSON.
 func (app *Config) HandleSubmissions(w http.ResponseWriter, r *http.Request) {
 	var requestPayload RequestPayload
 
@@ -51,11 +53,8 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
 	// call the service
-	request, err := http.NewRequest(
-		"POST",
-		"http;//authentication-service/authenticate",
-		bytes.NewBuffer(jsonData),
-	)
+	request, err := http.NewRequest("POST", "http://authentication-service/authenticate", bytes.NewBuffer(jsonData))
+
 	if err != nil {
 		app.errorJSON(w, err)
 		return
