@@ -10,8 +10,14 @@
 > We need to be able to store some information
 #### So we can add a Postgres(in Docker)
 
-### Authentication Service
+## Authentication Service
 1. Will listen for a `POST` request with a json body of a username nad pw
 2. Then it will use our `data.Models`, to check to see if the password and username combo exist
     - a. Will send an appropriate response back
 3. Broker Service is a good example to use
+
+### Update the Broker for a stndard JSON format, and connect to `AUTH`
+Modify the broker application
+- listen for a request from the frontend
+- then fire a request off to the authentication microservice
+- recieve the response from the microservice and send some kind of response back to the end user
