@@ -49,6 +49,7 @@ func main() {
 	}
 }
 
+// to open a connect to the db, you call open on the sql driver and pass in pgx (posgres connection as the query, and then provide the dsn [Data Source Name])
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
