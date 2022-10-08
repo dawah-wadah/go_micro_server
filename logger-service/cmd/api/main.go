@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 )
 
 const (
@@ -23,6 +24,16 @@ func main() {
 		log.panic(err)
 	}
 	client = mongoClient
+
+	// create a context inorder to disconnect from MongoDB
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			log.panic(err)
+		}
+	}()
 }
 
 func connectToMongo() (*mongo.Client, error) {
