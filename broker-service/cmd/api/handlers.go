@@ -10,7 +10,7 @@ import (
 type RequestPayload struct {
 	Action string      `json:"action"`
 	Auth   AuthPayload `json:"auth,omitempty"`
-	Log   LogPayload `json:"log,omitempty"`
+	Log    LogPayload  `json:"log,omitempty"`
 }
 
 type AuthPayload struct {
@@ -19,7 +19,7 @@ type AuthPayload struct {
 }
 
 type LogPayload struct {
-	Name string `json:"name"
+	Name string `json:"name"`
 	Data string `json:"data"`
 }
 
@@ -110,14 +110,14 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	// create some json we'll send to the log microservice
 	// dont use marshall indent in prod, its just useful here for dev
 	// use Marshall instead
-    jsonData, _ := json.MarshalIndent(entry, "", "\t")
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
 
 	logServiceUrl := "http://logger-service/log"
 
 	request, err := http.NewRequest("POST", logServiceUrl, bytes.NewBuffer(jsonData))
 
-	if err!= nil {
-        app.errorJSON(w, err)
+	if err != nil {
+		app.errorJSON(w, err)
 		return
 	}
 
@@ -125,8 +125,8 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 	client := &http.Client{}
 
 	response, err := client.Do(request)
-	if err!= nil {
-        app.errorJSON(w, err)
+	if err != nil {
+		app.errorJSON(w, err)
 		return
 	}
 
@@ -134,11 +134,11 @@ func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
 
 	if response.StatusCode != http.StatusAccepted {
 		app.errorJSON(w, errors.New("error calling log service"))
-        return
+		return
 	}
 
 	var payload JsonResponse
-    payload.Error = false
+	payload.Error = false
 	payload.Message = "logged!"
 
 	app.writeJSON(w, http.StatusAccepted, payload)
