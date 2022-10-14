@@ -11,6 +11,15 @@
 # Test binary, built with `go test -c`
 *.test
 
+# Build Files
+authentication-service/authApp
+broker-service/brokerApp
+broker-service/cmd/api/handlers.go
+front-end/frontAPP
+listener-service/listenerApp
+logger-service/loggerServiceApp
+mailer-service/mailerApp
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
@@ -26,3 +35,4 @@ project/db-data/postgres/
 project/db-data/mongo/
 project/db-data/mongo/diagnostic.data/
 project/db-data/mongo/*
+
