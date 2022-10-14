@@ -22,6 +22,24 @@ services:
       mode: replicated
       replicas: 1
 
+  mailer-service:
+    build:
+      context: ./../mailer-service
+      dockerfile: ./../mailer-service/mailer-service.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_ENCRYPTION: none
+      FROM_NAME: "Taylor Swift"
+      FROM_ADDRESS: tswift@swift.com
+
   authentication-service:
     build:
       context: ./../authentication-service

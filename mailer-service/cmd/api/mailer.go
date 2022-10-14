@@ -59,7 +59,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 		return err
 	}
 
-	server := mail.NewSMTPCLient()
+	server := mail.NewSMTPClient()
 	// describe server
 	server.Host = m.Host
 	server.Port = m.Port
@@ -160,14 +160,14 @@ func (m *Mail) inLineCSS(s string) (string, error) {
 	return html, nil
 }
 
-func (m *Mail) getEncryption(encryption string) string {
+func (m *Mail) getEncryption(encryption string) mail.Encryption {
 	switch encryption {
 	case "tls":
 		return mail.EncryptionSTARTTLS
 	case "ssl":
 		return mail.EncryptionSSL
 	case "none":
-		return mail.EncryptionNONE
+		return mail.EncryptionNone
 	default:
 		return mail.EncryptionSTARTTLS
 	}
