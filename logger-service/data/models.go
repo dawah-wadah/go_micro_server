@@ -2,7 +2,13 @@ package data
 
 import (
 	"context"
+	"log"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var client *mongo.Client
@@ -57,10 +63,10 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 	opts.SetSort(bson.D{{"created_at", -1}})
 
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
-	if err!= nil {
-        log.PrintLn("Finding all docs error:", err)
+	if err != nil {
+		log.PrintLn("Finding all docs error:", err)
 		return nil, err
-    }
+	}
 
 	defer cursor.Close()
 
@@ -70,15 +76,95 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 		var item LogEntry
 
 		err = cursor.Decode(&item)
-        if err!= nil {
+		if err != nil {
 			log.PrintLn("Error decoding log into slice:", err)
-            return nil, err
-	} else {
-		logs = append(logs, &item)
-	}
+			return nil, err
+		} else {
+			logs = append(logs, &item)
+		}
 
-	return logs, nil
+		return logs, nil
+	}
+}
+
+func getContext() (context.Context, context.CancelFunc) {
+	return context.WithTimeout(context.Background(), time.Second*15)
 }
 
 // get record by id
+func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
+	ctx, cancel := getContext()
+	defer cancel()
+
+	collection := client.Database("logs").Collections("logs")
+	// convert id to something mongo can injest
+	docID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	var entry LogEntry
+	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&entry)
+	if err != nil {
+		return nil, err
+	}
+	return &entry, nil
+}
+
 // delete collection
+
+func (l *LogEntry) DropCollection() error {
+	ctx, cancel := getContext()
+	defer cancel()
+	collection := client.Database("logs").Collection("logs")
+	err := collection.Drop(ctx)
+	if err != nil {
+		log.PrintLn("Error dropping collection:", err)
+		return err
+	}
+	return nil
+}
+
+// this is actually my own blind attemp at updating, it is wrong but i will keep it to see how i think
+// func (l *LogEntry) UpdateOne(entry LogEntry) (LogEntry, error) {
+
+// 	collection := client.Database("logs").Collection("logs")
+// 	err := collection.UpdateOne(ctx, LogEntry{
+// 		ID:        entry.ID,
+// 		Data:      entry.Data,
+// 		CreatedAt: entry.CreatedAt,
+// 		UpdatedAt: time.Now(),
+// 	})
+// 	if err != nil {
+// 		log.PrintLn("Error updating log entry into logs: ", err)
+// 		return LogEntry{}, err
+// 	}
+
+// }
+
+// this is the official way to update a log entry
+func (l *LogEntry) UpdateOne() (*mongo.UpdateResult, error) {
+	ctx, cancel := getContext()
+	defer cancel()
+	collection := client.Database("logs").Collection("logs")
+
+	// get the docID from the reciever
+	docID, err := primitive.ObjectIDFromHex(l.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := collection.UpdateOne(ctx, bson.M{"_id": docID}, bson.D{
+		{
+			"$set": bson.D{
+				{"name", l.Name},
+				{"data", l.Data},
+				{"updated_at", time.Now()},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
