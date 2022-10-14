@@ -2,19 +2,23 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"time"
 )
 
 const (
 	webPort  = "80"
 	rpcPort  = 5001
-	mongoURL = "mongodb://mongo:27017"
+	mongoURL = "mongodb://localhost:27017"
 	grpcPort = "50001"
 )
 
 var client *mongo.Client
 
 type Config struct {
+	// 5 - Set up config with new models
+	Models data.Models
 }
 
 func main() {
@@ -35,6 +39,35 @@ func main() {
 			log.panic(err)
 		}
 	}()
+
+	app := Config{
+		Models: data.New(client),
+	}
+
+	// start web server
+
+	// go app.serve()
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Panic(err)
+	}
+
+}
+
+func (app *Config) serve() {
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+	err := srv.ListenAndServe()
+	if err != nil {
+		log.panic(err)
+	}
+
 }
 
 func connectToMongo() (*mongo.Client, error) {
