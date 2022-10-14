@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -15,6 +16,7 @@ func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 	var requestPayload mailMessage
 	err := app.readJSON(w, r, &requestPayload)
 	if err != nil {
+		log.Println("Error Reading JSON", err)
 		app.errorJSON(w, err)
 		return
 	}
@@ -26,6 +28,7 @@ func (app *Config) SendMail(w http.ResponseWriter, r *http.Request) {
 	}
 	err = app.Mailer.SendSMTPMessage(msg)
 	if err != nil {
+		log.Println("Error Sending SMTP Message", err)
 		app.errorJSON(w, err)
 		return
 	}

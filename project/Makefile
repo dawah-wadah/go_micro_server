@@ -1,7 +1,7 @@
 FRONT_END_BINARY=frontApp
 BROKER_BINARY=brokerApp
 LOGGER_BINARY=loggerServiceApp
-MAILER_BINARY=mailerServiceApp
+MAILER_BINARY=mailerApp
 AUTH_BINARY=authApp
 
 ## up: starts all containers in the background without forcing build

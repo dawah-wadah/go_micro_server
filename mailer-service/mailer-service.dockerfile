@@ -7,6 +7,7 @@ FROM alpine:latest
 
 RUN mkdir /app
 
-COPY mailerServiceApp /app
+COPY mailerApp /app
+COPY /cmd/api/templates /templates
 
-CMD [ "/app/mailerServiceApp" ]
+CMD [ "/app/mailerApp" ]

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -57,7 +58,7 @@ func (app *Config) HandleSubmissions(w http.ResponseWriter, r *http.Request) {
 	case "log":
 		app.logItem(w, requestPayload.Log)
 	case "mail":
-		app.sendMail(w, requestPayload.mail)
+		app.sendMail(w, requestPayload.Mail)
 
 	default:
 		app.errorJSON(w, errors.New("unknown action"))
@@ -158,7 +159,7 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	// create some json we'll send to the mail microservice
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
 
-	mailServiceUrl := "http://mail-service/send"
+	mailServiceUrl := "http://mailer-service/send"
 
 	// post to mail service
 	// expects JSON
@@ -181,7 +182,7 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 
 	// make sure we get back the right status code
 	if response.StatusCode != http.StatusAccepted {
-		app.errorJSON(w, errors.New("error calling mail service"))
+		app.errorJSON(w, errors.New(fmt.Sprintf("error calling mail service %d", response.StatusCode)))
 		return
 	}
 
