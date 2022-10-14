@@ -68,7 +68,7 @@ func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) er
 	}
 	var payload JsonResponse
 	payload.Error = true
-	payload.Message = err.Error()
+	payload.Message = "BROKER: " + err.Error()
 
 	return app.writeJSON(w, statusCode, payload)
 }

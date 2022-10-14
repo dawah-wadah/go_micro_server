@@ -66,7 +66,7 @@ func main() {
 }
 
 func (app *Config) rpcListen() error {
-	log.Println("Starting rpc server on port %s", rpcPort)
+	log.Printf("Starting rpc server on port %s", rpcPort)
 	listen, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
 	if err != nil {
 		return err

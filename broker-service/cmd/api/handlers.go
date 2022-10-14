@@ -57,7 +57,7 @@ func (app *Config) HandleSubmissions(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logEventViaRabbit(w, requestPayload.Log)
+		// app.logEventViaRabbit(w, requestPayload.Log)
 		app.logItemViaRPC(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
@@ -234,6 +234,7 @@ type RPCPayload struct {
 func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 	// get an RPC client
 	client, err := rpc.Dial("tcp", "logger-service:5001")
+	println("got the client for rpc")
 	if err != nil {
 		app.errorJSON(w, err)
 		return
