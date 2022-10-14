@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"log-service/data"
+	"net/http"
+)
 
 // function with a receiver of app pointing to config
 

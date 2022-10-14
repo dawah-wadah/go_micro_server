@@ -46,7 +46,7 @@ func (l *LogEntry) Insert(entry LogEntry) (error error) {
 		UpdatedAt: time.Now(),
 	})
 	if err != nil {
-		log.PrintLn("Error inserting log entry into logs: ", err)
+		log.Println("Error inserting log entry into logs: ", err)
 		return err
 	}
 
@@ -64,11 +64,11 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
-		log.PrintLn("Finding all docs error:", err)
+		log.Println("Finding all docs error:", err)
 		return nil, err
 	}
 
-	defer cursor.Close()
+	defer cursor.Close(context.TODO())
 
 	var logs []*LogEntry
 
@@ -77,14 +77,14 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 
 		err = cursor.Decode(&item)
 		if err != nil {
-			log.PrintLn("Error decoding log into slice:", err)
+			log.Println("Error decoding log into slice:", err)
 			return nil, err
 		} else {
 			logs = append(logs, &item)
 		}
 
-		return logs, nil
 	}
+	return logs, nil
 }
 
 func getContext() (context.Context, context.CancelFunc) {
@@ -96,7 +96,7 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 	ctx, cancel := getContext()
 	defer cancel()
 
-	collection := client.Database("logs").Collections("logs")
+	collection := client.Database("logs").Collection("logs")
 	// convert id to something mongo can injest
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -118,7 +118,7 @@ func (l *LogEntry) DropCollection() error {
 	collection := client.Database("logs").Collection("logs")
 	err := collection.Drop(ctx)
 	if err != nil {
-		log.PrintLn("Error dropping collection:", err)
+		log.Println("Error dropping collection:", err)
 		return err
 	}
 	return nil
@@ -135,7 +135,7 @@ func (l *LogEntry) DropCollection() error {
 // 		UpdatedAt: time.Now(),
 // 	})
 // 	if err != nil {
-// 		log.PrintLn("Error updating log entry into logs: ", err)
+// 		log.Println("Error updating log entry into logs: ", err)
 // 		return LogEntry{}, err
 // 	}
 
@@ -153,15 +153,17 @@ func (l *LogEntry) UpdateOne() (*mongo.UpdateResult, error) {
 		return nil, err
 	}
 
-	result, err := collection.UpdateOne(ctx, bson.M{"_id": docID}, bson.D{
-		{
-			"$set": bson.D{
+	result, err := collection.UpdateOne(
+		ctx,
+		bson.M{"_id": docID},
+		bson.D{
+			{"$set", bson.D{
 				{"name", l.Name},
 				{"data", l.Data},
 				{"updated_at", time.Now()},
-			},
+			}},
 		},
-	})
+	)
 
 	if err != nil {
 		return nil, err

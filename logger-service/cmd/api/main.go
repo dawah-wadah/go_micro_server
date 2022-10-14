@@ -3,8 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"log-service/data"
 	"net/http"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -26,7 +31,7 @@ func main() {
 	// connect to Mongo
 	mongoClient, err := connectToMongo()
 	if err != nil {
-		log.panic(err)
+		log.Panic(err)
 	}
 	client = mongoClient
 
@@ -36,7 +41,7 @@ func main() {
 
 	defer func() {
 		if err := client.Disconnect(ctx); err != nil {
-			log.panic(err)
+			log.Panic(err)
 		}
 	}()
 
@@ -65,7 +70,7 @@ func (app *Config) serve() {
 	}
 	err := srv.ListenAndServe()
 	if err != nil {
-		log.panic(err)
+		log.Panic(err)
 	}
 
 }
@@ -74,7 +79,7 @@ func connectToMongo() (*mongo.Client, error) {
 	// create the connection options
 
 	clientOptions := options.Client().ApplyURI(mongoURL)
-	clientOptions.SetAuth(options.Credentials{
+	clientOptions.SetAuth(options.Credential{
 		Username: "admin",
 		Password: "password",
 	})
@@ -82,7 +87,7 @@ func connectToMongo() (*mongo.Client, error) {
 	// connect
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.PrintLn("Error Conencting:", err)
+		log.Println("Error Conencting:", err)
 	}
 
 	return client, err
