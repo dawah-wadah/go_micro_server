@@ -1,7 +1,7 @@
 FRONT_END_BINARY=frontApp
 BROKER_BINARY=brokerApp
 LOGGER_BINARY=loggerServiceApp
-LISTENER_APP=listenerApp
+LISTENER_BINARY=listenerApp
 MAILER_BINARY=mailerApp
 AUTH_BINARY=authApp
 
@@ -59,7 +59,7 @@ build_logger:
 build_listener:
 	@echo "Building listener binary..."
 	@echo "=======================================And Shade of gray and candlelight============================================"
-	cd ../listener-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LISTENER_APP} .
+	cd ../listener-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LISTENER_BINARY} .
 	@echo "Done!"
 
 ## build_mailer: builds the mailer binary as a linux executable
