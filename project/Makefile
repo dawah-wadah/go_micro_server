@@ -14,7 +14,7 @@ up_build:  build_broker build_auth build_logger start
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
-	@echo "=======================================And You didnt see it============================================"
+	@echo "=======================================The Ties were black, the lies were white============================================"
 	docker-compose up --build -d
 	@echo "Docker images built and started!"
 
