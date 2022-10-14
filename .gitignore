@@ -14,7 +14,6 @@
 # Build Files
 authentication-service/authApp
 broker-service/brokerApp
-broker-service/cmd/api/handlers.go
 front-end/frontAPP
 listener-service/listenerApp
 logger-service/loggerServiceApp
