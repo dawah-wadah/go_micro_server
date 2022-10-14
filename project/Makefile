@@ -1,6 +1,7 @@
 FRONT_END_BINARY=frontApp
 BROKER_BINARY=brokerApp
 LOGGER_BINARY=loggerServiceApp
+LISTENER_APP=listenerApp
 MAILER_BINARY=mailerApp
 AUTH_BINARY=authApp
 
@@ -11,7 +12,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build:  build_broker build_auth build_logger  build_mailer start
+up_build:  build_broker build_auth build_logger  build_mailer build_listener start
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -43,7 +44,7 @@ build_auth:
 ## build_front: builds the frone end binary
 build_front:
 	@echo "Building front end binary..."
-	@echo "=======================================And Shade of gray and candlelight============================================"
+	@echo "=======================================I Wanted to leave him============================================"
 	cd ../front-end && env CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
 	@echo "Done!"
 
@@ -52,6 +53,13 @@ build_logger:
 	@echo "Building logger binary..."
 	@echo "=======================================But I didn't mean it============================================"
 	cd ../logger-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LOGGER_BINARY} ./cmd/api
+	@echo "Done!"
+
+## build_listener: builds the listener binary as a linux executable
+build_listener:
+	@echo "Building listener binary..."
+	@echo "=======================================And Shade of gray and candlelight============================================"
+	cd ../listener-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LISTENER_APP} .
 	@echo "Done!"
 
 ## build_mailer: builds the mailer binary as a linux executable
