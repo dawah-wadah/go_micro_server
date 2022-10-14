@@ -172,3 +172,7 @@ func (m *Mail) getEncryption(encryption string) mail.Encryption {
 		return mail.EncryptionSTARTTLS
 	}
 }
+
+// next
+// broker needs to accept mail request
+// then we have to attqached to front end
