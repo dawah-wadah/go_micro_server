@@ -54,7 +54,7 @@ func (consumer *Consumer) Listen(topics []string) error {
 	}
 	for _, s := range topics {
 		ch.QueueBind(
-			q.name,       // randomly generated name for the queue
+			q.Name,       // randomly generated name for the queue
 			s,            // name of the topic
 			"logs_topic", // hardcoded but will suffice for our purposes
 			false,        // shall we wait?
